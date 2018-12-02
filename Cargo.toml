@@ -1,0 +1,11 @@
+[package]
+name = "adventofcode2018"
+version = "0.1.0"
+authors = ["Alex Kofke <akofke@gmail.com>"]
+
+[lib]
+
+[dependencies]
+rust-crypto = "*"
+aoc-runner = "*"
+aoc-runner-derive = "*"
