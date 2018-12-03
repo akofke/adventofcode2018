@@ -9,3 +9,4 @@ authors = ["Alex Kofke <akofke@gmail.com>"]
 rust-crypto = "*"
 aoc-runner = "*"
 aoc-runner-derive = "*"
+itertools = "*"
