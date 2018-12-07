@@ -8,4 +8,4 @@ pub mod day4;
 extern crate aoc_runner_derive;
 extern crate crypto;
 
-aoc_lib!{ year = 2018 }
+aoc_lib! { year = 2018 }
