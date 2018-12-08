@@ -1,9 +1,17 @@
 use itertools::Itertools;
+use std::iter::once;
 
 const LETTERS: &'static str = "abcdefghijklmnopqrstuvwxyz";
 
 fn diff_ascii_case(a: u8, b: u8) -> bool {
     (a as i8 - b as i8).abs() == 32i8
+}
+
+fn make_regex() -> regex::Regex {
+    let re_str = LETTERS.chars().map(|c| {
+        format!(r"({}{})|({}{})", c, c.to_ascii_uppercase(), c.to_ascii_uppercase(), c)
+    }).join("|");
+    regex::Regex::new(&re_str).unwrap()
 }
 
 fn apply_reactions(compound: &str) -> (bool, String) {
@@ -38,6 +46,19 @@ fn apply_reactions(compound: &str) -> (bool, String) {
 //        false => new_compound
 //    }
 //}
+fn apply_reactions_regex(re: &regex::Regex, compound: &str) -> (bool, String) {
+    let has_reaction = re.is_match(compound);
+    (has_reaction, re.replace_all(compound, "").to_string())
+}
+
+fn fully_react_regex(compound: &str) -> String {
+    let re = make_regex();
+    let mut compound = compound.to_string();
+    while let (true, new_compound) = apply_reactions_regex(&re, &compound) {
+        compound = new_compound
+    }
+    compound
+}
 
 fn fully_react(compound: &str) -> String {
     let mut compound = compound.to_string();
