@@ -68,11 +68,30 @@ fn fully_react(compound: &str) -> String {
     compound.to_string()
 }
 
-#[aoc(day5, part1)]
-pub fn part1(input: &str) -> i32 {
-    let reacted = fully_react(input);
+fn fully_react_fast(compound: &str) -> String {
+    let mut reacted = Vec::new();
+    for b in compound.bytes() {
+        match reacted.pop() {
+            None => {
+                reacted.push(b);
+            },
+            Some(a) => {
+                if !diff_ascii_case(a, b) {
+                    reacted.push(a);
+                    reacted.push(b);
+                }
+            }
+        }
+    }
+    unsafe {
+        String::from_utf8_unchecked(reacted)
+    }
+}
 
-    reacted.len() as i32
+#[aoc(day5, part1)]
+pub fn part1(input: &str) -> usize {
+    let reacted = fully_react_fast(input);
+    reacted.len()
 }
 
 #[aoc(day5, part2)]
@@ -85,7 +104,7 @@ pub fn part2(input: &str) -> usize {
             String::from_utf8(bytes).unwrap()
         })
         .map(|filtered| {
-            fully_react(&filtered).len()
+            fully_react_fast(&filtered).len()
         })
         .min().unwrap()
 }
