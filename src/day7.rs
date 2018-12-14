@@ -1,5 +1,6 @@
 use regex::Regex;
 use petgraph::prelude::*;
+#[allow(unused_imports)]
 use petgraph::dot::{Dot, Config};
 use std::collections::HashMap;
 use std::iter::FromIterator;
