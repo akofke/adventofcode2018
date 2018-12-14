@@ -1,5 +1,4 @@
 use itertools::Itertools;
-use ndarray::prelude::*;
 
 #[derive(Debug, Eq, PartialEq)]
 struct Point(i32, i32);
@@ -10,7 +9,7 @@ fn taxicab_distance(first: &Point, second: &Point) -> i32 {
 
 fn area_of_point(point: &Point, others: &Vec<Point>, max: (i32, i32)) -> i32 {
     let (max_x, max_y) = max;
-    let closest_points = (0..=max_x).cartesian_product((0..=max_y))
+    let closest_points = (0..=max_x).cartesian_product(0..=max_y)
         .map(|p| Point(p.0, p.1))
         .filter(|p| {
             let dist = taxicab_distance(point, p);

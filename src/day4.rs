@@ -74,12 +74,12 @@ fn collect_sleep_schedule(mut reports: Vec<GuardReport>) -> HashMap<u32, Vec<i32
 
 #[aoc(day4, part1)]
 pub fn part1(input: &str) -> i32 {
-    let mut reports = parse_logs(input);
+    let reports = parse_logs(input);
     let guard_sleeps = collect_sleep_schedule(reports);
 
     let (best_guard, best_minutes) = guard_sleeps
         .into_iter()
-        .max_by_key(|(id, minutes)| minutes.iter().sum::<i32>())
+        .max_by_key(|(_id, minutes)| minutes.iter().sum::<i32>())
         .unwrap();
 
     let best_minute = best_minutes
@@ -99,7 +99,7 @@ pub fn part1(input: &str) -> i32 {
 
 #[aoc(day4, part2)]
 pub fn part2(input: &str) -> i32 {
-    let mut reports = parse_logs(input);
+    let reports = parse_logs(input);
     let guard_sleeps = collect_sleep_schedule(reports);
 
     let (best_guard, best_minutes) = guard_sleeps

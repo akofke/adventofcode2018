@@ -1,5 +1,4 @@
 use itertools::Itertools;
-use std::iter::once;
 
 const LETTERS: &'static str = "abcdefghijklmnopqrstuvwxyz";
 
@@ -12,6 +11,21 @@ fn make_regex() -> regex::Regex {
         format!(r"({}{})|({}{})", c, c.to_ascii_uppercase(), c.to_ascii_uppercase(), c)
     }).join("|");
     regex::Regex::new(&re_str).unwrap()
+}
+
+
+fn apply_reactions_regex(re: &regex::Regex, compound: &str) -> (bool, String) {
+    let has_reaction = re.is_match(compound);
+    (has_reaction, re.replace_all(compound, "").to_string())
+}
+
+fn fully_react_regex(compound: &str) -> String {
+    let re = make_regex();
+    let mut compound = compound.to_string();
+    while let (true, new_compound) = apply_reactions_regex(&re, &compound) {
+        compound = new_compound
+    }
+    compound
 }
 
 fn apply_reactions(compound: &str) -> (bool, String) {
@@ -27,40 +41,7 @@ fn apply_reactions(compound: &str) -> (bool, String) {
     (found_reaction, String::from_utf8(new_compound).unwrap())
 }
 
-//fn apply_reactions_iter<I, O>(compound: I) -> O
-//    where I: Itertools<Item=u8>,
-//          O: Itertools<Item=u8>
-//{
-//    let mut found_reaction = false;
-//    let new_compound = compound.coalesce(|a, b| {
-//        if diff_ascii_case(a, b) {
-//            found_reaction = true;
-//            Ok(0)
-//        } else {
-//            Err((a, b))
-//        }
-//    }).filter(|b| { *b != 0 });
-//
-//    match found_reaction {
-//        true => apply_reactions_iter(new_compound),
-//        false => new_compound
-//    }
-//}
-fn apply_reactions_regex(re: &regex::Regex, compound: &str) -> (bool, String) {
-    let has_reaction = re.is_match(compound);
-    (has_reaction, re.replace_all(compound, "").to_string())
-}
-
-fn fully_react_regex(compound: &str) -> String {
-    let re = make_regex();
-    let mut compound = compound.to_string();
-    while let (true, new_compound) = apply_reactions_regex(&re, &compound) {
-        compound = new_compound
-    }
-    compound
-}
-
-fn fully_react(compound: &str) -> String {
+fn fully_react_iterative(compound: &str) -> String {
     let mut compound = compound.to_string();
     while let (true, new_compound) = apply_reactions(&compound) {
         compound = new_compound
@@ -68,7 +49,7 @@ fn fully_react(compound: &str) -> String {
     compound.to_string()
 }
 
-fn fully_react_fast(compound: &str) -> String {
+fn fully_react(compound: &str) -> String {
     let mut reacted = Vec::new();
     for b in compound.bytes() {
         match reacted.pop() {
@@ -88,9 +69,21 @@ fn fully_react_fast(compound: &str) -> String {
     }
 }
 
-#[aoc(day5, part1)]
+#[aoc(day5, part1, regex)]
+pub fn part1_regex(input: &str) -> usize {
+    let reacted = fully_react_regex(input);
+    reacted.len()
+}
+
+#[aoc(day5, part1, iterative)]
+pub fn part1_iter(input: &str) -> usize {
+    let reacted = fully_react_iterative(input);
+    reacted.len()
+}
+
+#[aoc(day5, part1, fast)]
 pub fn part1(input: &str) -> usize {
-    let reacted = fully_react_fast(input);
+    let reacted = fully_react(input);
     reacted.len()
 }
 
@@ -104,7 +97,7 @@ pub fn part2(input: &str) -> usize {
             String::from_utf8(bytes).unwrap()
         })
         .map(|filtered| {
-            fully_react_fast(&filtered).len()
+            fully_react(&filtered).len()
         })
         .min().unwrap()
 }
